@@ -1,7 +1,9 @@
 name: Waiting For Review Labeler
 
 on:
-  workflow_dispatch:
+  schedule:
+  # Crontab Every Hour
+  - cron: '0 * * * *'
 
 permissions:
   pull-requests: write
@@ -10,7 +12,7 @@ jobs:
   action:
     runs-on: ubuntu-latest
     steps:
-      - uses: kentaro-m/review-time-alert@main
+      - uses: EricStrohl/review-time-alert@main
         with:
           hours-before-add-label: 1
           label-name: 'needs-review'
