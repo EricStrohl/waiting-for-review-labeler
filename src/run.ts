@@ -44,10 +44,11 @@ export const getTargetPullRequests: GetTargetPullRequests = (
       core.debug(`waiting time for review: ${diff}`)
 
       //Use dayjs day() function which returns 0-6 for the day of the week for that date object to check for PRs made on Thurs/Fri
-      if(from.day() === 4 || from.day() === 5) {
+      if(from.day() === 3 || from.day() === 4) {
         hoursBeforeAddLabel += 2 //Add 48 hours to the limit to account for the weekend
       }
 
+      console.log(hoursBeforeAddLabel)
       if (diff < hoursBeforeAddLabel) {
         return
       }
