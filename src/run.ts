@@ -48,6 +48,7 @@ export const getTargetPullRequests: GetTargetPullRequests = (
         hoursBeforeAddLabel += 2 //Add 48 hours to the limit to account for the weekend
       }
 
+      console.log(hoursBeforeAddLabel)
       if (diff < hoursBeforeAddLabel) {
         return
       }
