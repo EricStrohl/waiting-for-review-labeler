@@ -26,7 +26,7 @@ describe('getTargetPullRequests', () => {
             }
           }
         ],
-        3,
+        2,
         false
       )
     ).toEqual([
