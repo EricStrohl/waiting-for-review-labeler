@@ -5,7 +5,7 @@ import {getTargetPullRequests, run} from '../src/run'
 jest.mock('dayjs', () =>
   jest.fn((...args) =>
     jest.requireActual('dayjs')(
-      args.filter(arg => arg).length > 0 ? args : '2022-01-08T06:00:00Z'
+      args.filter(arg => arg).length > 0 ? args : '2024-01-19T06:01:00Z'
     )
   )
 )
@@ -19,7 +19,7 @@ describe('getTargetPullRequests', () => {
         [
           {
             number: 1,
-            createdAt: '2022-01-08T00:00:00Z',
+            createdAt: '2024-01-19T00:00:00Z',
             reviewDecision: null,
             timelineItems: {
               nodes: []
@@ -32,7 +32,7 @@ describe('getTargetPullRequests', () => {
     ).toEqual([
       {
         number: 1,
-        createdAt: '2022-01-08T00:00:00Z',
+        createdAt: '2024-01-19T00:00:00Z',
         reviewDecision: null,
         timelineItems: {
           nodes: []
@@ -47,7 +47,7 @@ describe('getTargetPullRequests', () => {
         [
           {
             number: 1,
-            createdAt: '2022-01-08T00:00:00Z',
+            createdAt: '2024-01-19T00:00:00Z',
             reviewDecision: null,
             timelineItems: {
               nodes: []
@@ -60,18 +60,37 @@ describe('getTargetPullRequests', () => {
     ).toEqual([])
   })
 
+  test('return empty array if hours before add label would extend into weekend.', () => {
+    expect(
+      getTargetPullRequests(
+        [
+          {
+            number: 1,
+            createdAt: '2024-01-19T00:00:00Z',
+            reviewDecision: null,
+            timelineItems: {
+              nodes: []
+            }
+          }
+        ],
+        6, //6 hours for label, but should be 7 for this date
+        false
+      )
+    ).toEqual([])
+  })
+
   test('return filtered pull requests which it being ready for review more than certain hours.', () => {
     expect(
       getTargetPullRequests(
         [
           {
             number: 1,
-            createdAt: '2022-01-08T00:00:00Z',
+            createdAt: '2024-01-19T00:00:00Z',
             reviewDecision: null,
             timelineItems: {
               nodes: [
                 {
-                  createdAt: '2022-01-08T04:00:00Z'
+                  createdAt: '2024-01-19T04:00:00Z'
                 }
               ]
             }
@@ -89,7 +108,7 @@ describe('getTargetPullRequests', () => {
         [
           {
             number: 1,
-            createdAt: '2022-01-08T00:00:00Z',
+            createdAt: '2024-01-19T00:00:00Z',
             reviewDecision: null,
             timelineItems: {
               nodes: []
@@ -97,7 +116,7 @@ describe('getTargetPullRequests', () => {
           },
           {
             number: 2,
-            createdAt: '2022-01-08T00:00:00Z',
+            createdAt: '2024-01-19T00:00:00Z',
             reviewDecision: 'APPROVED',
             timelineItems: {
               nodes: []
@@ -110,7 +129,7 @@ describe('getTargetPullRequests', () => {
     ).toEqual([
       {
         number: 1,
-        createdAt: '2022-01-08T00:00:00Z',
+        createdAt: '2024-01-19T00:00:00Z',
         reviewDecision: null,
         timelineItems: {
           nodes: []
@@ -141,7 +160,7 @@ describe('run', () => {
     // @ts-expect-error
     github.context = {
       repo: {
-        owner: 'kentaro-m',
+        owner: 'EricStrohl',
         repo: 'waiting-for-review-labeler'
       }
     }
@@ -162,7 +181,7 @@ describe('run', () => {
         nodes: [
           {
             number: 1,
-            createdAt: '2022-01-08T00:00:00Z',
+            createdAt: '2024-01-19T00:00:00Z',
             reviewDecision: null,
             timelineItems: {
               nodes: []
@@ -179,7 +198,7 @@ describe('run', () => {
     await run()
 
     expect(spy.mock.calls[0][0]).toEqual({
-      owner: 'kentaro-m',
+      owner: 'EricStrohl',
       repo: 'waiting-for-review-labeler',
       issue_number: 1,
       labels: ['waiting for review']
@@ -225,7 +244,7 @@ describe('run', () => {
         nodes: [
           {
             number: 1,
-            createdAt: '2022-01-08T05:00:00Z',
+            createdAt: '2024-01-19T05:00:00Z',
             reviewDecision: null,
             timelineItems: {
               nodes: []
@@ -258,7 +277,7 @@ describe('run', () => {
         nodes: [
           {
             number: 1,
-            createdAt: '2022-01-08T05:00:00Z',
+            createdAt: '2024-01-19T05:00:00Z',
             reviewDecision: null,
             timelineItems: {
               nodes: []
