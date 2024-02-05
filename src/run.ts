@@ -134,7 +134,6 @@ export async function run(): Promise<void> {
 
     core.debug('get target pull request data:')
     core.debug(JSON.stringify(targetPullRequests))
-    core.debug(JSON.stringify(targetPullRequests[0].))
     core.setOutput('LabeledPullRequests', JSON.stringify(targetPullRequests))
     
     for (const pullRequest of targetPullRequests) {
