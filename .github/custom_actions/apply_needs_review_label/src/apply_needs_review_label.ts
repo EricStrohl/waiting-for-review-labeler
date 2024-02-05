@@ -41,12 +41,14 @@ export const getTargetPullRequests: GetTargetPullRequests = (
       const from = dayjs(createdAt)
       const to = dayjs()
       const diff = to.diff(from, 'hour')
-      core.debug(`waiting time for review: ${diff}`)
+      core.debug(`time for review: ${diff}`)
 
       //Use dayjs day() function which returns 0-6 for the day of the week for that date object to check for PRs made on Thurs/Fri
       if(from.day() === 4 || from.day() === 5) {
         hoursBeforeAddLabel += 1 //Add 48 hours to the limit to account for the weekend
       }
+
+      core.debug(`hoursBeforeAddLabel: ${hoursBeforeAddLabel}`)
       
       if (diff < hoursBeforeAddLabel) {
         return
@@ -161,3 +163,5 @@ export async function run(): Promise<void> {
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
+
+run()

@@ -1,0 +1,23 @@
+name: 'Waiting For Review Labeler'
+description: 'Add label to a pull request after it has been opened or ready for review for more than certain hours.'
+author: 'Mason Strohl'
+inputs:
+  repo-token:
+    description: 'Token for the repository. Can be passed in using `{{ secrets.GITHUB_TOKEN }}`.'
+    required: false
+    default: ${{ github.token }}
+  hours-before-add-label:
+    required: true
+    description: 'The number of hours to wait to add label to a pull request after it being opened or ready for review.'
+    default: 48
+  label-name:
+    required: false
+    description: 'The name of label to add it to a pull request after it being opened or ready for review.'
+    default: 'needs-review'
+  skip-approved-pull-request:
+    required: false
+    description: 'Skip adding label when a pull request review status is approved.'
+    default: false
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
