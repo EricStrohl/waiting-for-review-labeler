@@ -144,7 +144,10 @@ export async function run(): Promise<void> {
           issue_number: pullRequest?.number,
           labels: [labelName]
         }))
+      pullRequest && (
+        core.debug(JSON.stringify(pullRequest)),
         outputArray.push(pullRequest)
+      )
     }
 
     core.debug(JSON.stringify(outputArray))
