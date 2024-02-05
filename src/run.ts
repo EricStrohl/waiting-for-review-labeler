@@ -147,7 +147,7 @@ export async function run(): Promise<void> {
         outputArray.push(pullRequest)
     }
 
-    console.log(JSON.stringify(outputArray))
+    core.debug(JSON.stringify(outputArray))
     core.setOutput('LabeledPullRequests', JSON.stringify(outputArray))
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
