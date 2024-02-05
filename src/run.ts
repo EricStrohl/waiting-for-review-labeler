@@ -131,14 +131,18 @@ export async function run(): Promise<void> {
     if (!targetPullRequests || targetPullRequests.length === 0) {
       return
     }
+    try {
+      const { data: pullRequestInfo } = await octokit.rest.pulls.get({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        pull_number: 8
+      })
+      core.debug(JSON.stringify(pullRequestInfo))
+    } catch (error) {
+      if (error instanceof Error) core.setFailed(error.message)
+    }
 
-    const { data: pullRequestInfo } = await octokit.rest.pulls.get({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      pull_number: 8
-    })
-    core.debug(JSON.stringify(pullRequestInfo))
-
+    core.debug('Made it passed the try/catch')
     core.debug('get target pull request data:')
     core.debug(JSON.stringify(targetPullRequests))
     core.setOutput('LabeledPullRequests', JSON.stringify(targetPullRequests))
