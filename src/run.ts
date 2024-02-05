@@ -134,8 +134,8 @@ export async function run(): Promise<void> {
 
     core.debug('get target pull request data:')
     core.debug(JSON.stringify(targetPullRequests))
-
-    let outputArray = []
+    core.setOutput('LabeledPullRequests', JSON.stringify(targetPullRequests))
+    
     for (const pullRequest of targetPullRequests) {
       pullRequest?.number &&
         (await octokit.rest.issues.addLabels({
@@ -144,14 +144,7 @@ export async function run(): Promise<void> {
           issue_number: pullRequest?.number,
           labels: [labelName]
         }))
-      pullRequest && (
-        core.debug(JSON.stringify(pullRequest)),
-        outputArray.push(pullRequest)
-      )
     }
-
-    core.debug(JSON.stringify(outputArray))
-    core.setOutput('LabeledPullRequests', JSON.stringify(outputArray))
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
