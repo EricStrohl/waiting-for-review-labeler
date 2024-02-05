@@ -132,16 +132,16 @@ export async function run(): Promise<void> {
       return
     }
 
-    core.debug('get target pull request data:')
-    core.debug(JSON.stringify(targetPullRequests))
-    core.setOutput('LabeledPullRequests', JSON.stringify(targetPullRequests))
-
     const { data: pullRequestInfo } = await octokit.rest.pulls.get({
       owner: context.repo.owner,
       repo: context.repo.repo,
       pull_number: 8
     })
     core.debug(JSON.stringify(pullRequestInfo))
+
+    core.debug('get target pull request data:')
+    core.debug(JSON.stringify(targetPullRequests))
+    core.setOutput('LabeledPullRequests', JSON.stringify(targetPullRequests))
     
     for (const pullRequest of targetPullRequests) {
       if(pullRequest?.number) {
