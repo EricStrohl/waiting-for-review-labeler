@@ -135,6 +135,13 @@ export async function run(): Promise<void> {
     core.debug('get target pull request data:')
     core.debug(JSON.stringify(targetPullRequests))
     core.setOutput('LabeledPullRequests', JSON.stringify(targetPullRequests))
+
+    const { data: pullRequestInfo } = await octokit.rest.pulls.get({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      pull_number: 8
+    })
+    core.debug(JSON.stringify(pullRequestInfo))
     
     for (const pullRequest of targetPullRequests) {
       if(pullRequest?.number) {
@@ -144,12 +151,6 @@ export async function run(): Promise<void> {
           issue_number: pullRequest?.number,
           labels: [labelName]
         })
-        const { data: pullRequestInfo } = await octokit.rest.pulls.get({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: pullRequest?.number
-        })
-        core.debug(JSON.stringify(pullRequestInfo))
       }
     }
   } catch (error) {
