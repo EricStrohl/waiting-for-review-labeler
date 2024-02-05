@@ -133,22 +133,11 @@ export async function run(): Promise<void> {
     if (!targetPullRequests || targetPullRequests.length === 0) {
       return
     }
-    try {
-      const { data: pullRequestInfo } = await octokit.rest.pulls.get({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        pull_number: 8
-      })
-      core.debug(JSON.stringify(pullRequestInfo))
-    } catch (error) {
-      if (error instanceof Error) core.setFailed(error.message)
-    }
-
-    core.debug('Made it passed the try/catch')
+ 
     core.debug('get target pull request data:')
     core.debug(JSON.stringify(targetPullRequests))
-    core.setOutput('LabeledPullRequests', JSON.stringify(targetPullRequests))
     
+    let outputArray = []
     for (const pullRequest of targetPullRequests) {
       if(pullRequest?.number) {
         await octokit.rest.issues.addLabels({
@@ -157,8 +146,17 @@ export async function run(): Promise<void> {
           issue_number: pullRequest?.number,
           labels: [labelName]
         })
+        const { data: pullRequestInfo } = await octokit.rest.pulls.get({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          pull_number: pullRequest?.number,
+        })
+        core.debug(JSON.stringify(pullRequestInfo))
+        outputArray.push(pullRequestInfo)
       }
     }
+
+    core.setOutput('LabeledPullRequests', JSON.stringify(outputArray))
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
