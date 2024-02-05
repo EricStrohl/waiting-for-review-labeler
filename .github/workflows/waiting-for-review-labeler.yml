@@ -1,9 +1,8 @@
 name: Waiting For Review Labeler
 
 on:
-  schedule:
-  # Crontab Every Hour
-  - cron: '0 * * * *'
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
 
 permissions:
   pull-requests: write

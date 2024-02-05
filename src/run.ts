@@ -44,11 +44,10 @@ export const getTargetPullRequests: GetTargetPullRequests = (
       core.debug(`waiting time for review: ${diff}`)
 
       //Use dayjs day() function which returns 0-6 for the day of the week for that date object to check for PRs made on Thurs/Fri
-      if(from.day() === 3 || from.day() === 4) {
-        hoursBeforeAddLabel += 2 //Add 48 hours to the limit to account for the weekend
+      if(from.day() === 4 || from.day() === 5) {
+        hoursBeforeAddLabel += 1 //Add 48 hours to the limit to account for the weekend
       }
-
-      console.log(hoursBeforeAddLabel)
+      
       if (diff < hoursBeforeAddLabel) {
         return
       }
@@ -136,6 +135,7 @@ export async function run(): Promise<void> {
     core.debug('get target pull request data:')
     core.debug(JSON.stringify(targetPullRequests))
 
+    let outputArray = []
     for (const pullRequest of targetPullRequests) {
       pullRequest?.number &&
         (await octokit.rest.issues.addLabels({
@@ -144,7 +144,11 @@ export async function run(): Promise<void> {
           issue_number: pullRequest?.number,
           labels: [labelName]
         }))
+        outputArray.push(pullRequest)
     }
+
+    core.debug(JSON.stringify(outputArray))
+    core.setOutput('LabeledPullRequests', JSON.stringify(outputArray))
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
