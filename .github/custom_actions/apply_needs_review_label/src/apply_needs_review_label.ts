@@ -47,8 +47,6 @@ export const getTargetPullRequests: GetTargetPullRequests = (
       if(from.day() === 4 || from.day() === 5) {
         hoursBeforeAddLabel += 1 //Add 48 hours to the limit to account for the weekend
       }
-
-      core.debug(`hoursBeforeAddLabel: ${hoursBeforeAddLabel}`)
       
       if (diff < hoursBeforeAddLabel) {
         return
@@ -151,7 +149,7 @@ export async function run(): Promise<void> {
           repo: context.repo.repo,
           pull_number: pullRequest?.number,
         })
-        core.debug(JSON.stringify(pullRequestInfo))
+        core.debug(JSON.stringify(pullRequestInfo.id))
         outputArray.push(pullRequestInfo)
       }
     }
