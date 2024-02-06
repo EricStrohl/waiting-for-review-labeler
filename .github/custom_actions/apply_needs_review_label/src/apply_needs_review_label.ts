@@ -21,6 +21,12 @@ type PullRequest = {
   }
 }
 
+type PullRequestInfoForSlack = {
+  html_url: string,
+  head_ref: string,
+  request_author: string,
+}
+
 type GetTargetPullRequests = (
   pullRequests: PullRequest[],
   hoursBeforeAddLabel: number,
@@ -133,9 +139,9 @@ export async function run(): Promise<void> {
     }
  
     core.debug('get target pull request data:')
-    core.debug(JSON.stringify(targetPullRequests))
+    //core.debug(JSON.stringify(targetPullRequests))
     
-    let outputArray = []
+    let outputArray: PullRequestInfoForSlack[] = []
     for (const pullRequest of targetPullRequests) {
       if(pullRequest?.number) {
         await octokit.rest.issues.addLabels({
@@ -149,8 +155,11 @@ export async function run(): Promise<void> {
           repo: context.repo.repo,
           pull_number: pullRequest?.number,
         })
-        core.debug(JSON.stringify(pullRequestInfo.id))
-        outputArray.push(pullRequestInfo)
+        outputArray.push({
+          html_url: pullRequestInfo.html_url,
+          head_ref: pullRequestInfo.head.ref,
+          request_author: pullRequestInfo.user.login
+        })
       }
     }
 
