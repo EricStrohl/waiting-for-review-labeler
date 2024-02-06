@@ -21,6 +21,12 @@ type PullRequest = {
   }
 }
 
+type PullRequestInfoForSlack = {
+  html_url: string,
+  head_ref: string,
+  request_author: string,
+}
+
 type GetTargetPullRequests = (
   pullRequests: PullRequest[],
   hoursBeforeAddLabel: number,
@@ -41,14 +47,13 @@ export const getTargetPullRequests: GetTargetPullRequests = (
       const from = dayjs(createdAt)
       const to = dayjs()
       const diff = to.diff(from, 'hour')
-      core.debug(`waiting time for review: ${diff}`)
+      core.debug(`time for review: ${diff}`)
 
       //Use dayjs day() function which returns 0-6 for the day of the week for that date object to check for PRs made on Thurs/Fri
-      if(from.day() === 3 || from.day() === 4) {
-        hoursBeforeAddLabel += 2 //Add 48 hours to the limit to account for the weekend
+      if(from.day() === 4 || from.day() === 5) {
+        hoursBeforeAddLabel += 1 //Add 48 hours to the limit to account for the weekend
       }
-
-      console.log(hoursBeforeAddLabel)
+      
       if (diff < hoursBeforeAddLabel) {
         return
       }
@@ -132,20 +137,36 @@ export async function run(): Promise<void> {
     if (!targetPullRequests || targetPullRequests.length === 0) {
       return
     }
-
+ 
     core.debug('get target pull request data:')
-    core.debug(JSON.stringify(targetPullRequests))
-
+    //core.debug(JSON.stringify(targetPullRequests))
+    
+    let outputArray: PullRequestInfoForSlack[] = []
     for (const pullRequest of targetPullRequests) {
-      pullRequest?.number &&
-        (await octokit.rest.issues.addLabels({
+      if(pullRequest?.number) {
+        await octokit.rest.issues.addLabels({
           owner: context.repo.owner,
           repo: context.repo.repo,
           issue_number: pullRequest?.number,
           labels: [labelName]
-        }))
+        })
+        const { data: pullRequestInfo } = await octokit.rest.pulls.get({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          pull_number: pullRequest?.number,
+        })
+        outputArray.push({
+          html_url: pullRequestInfo.html_url,
+          head_ref: pullRequestInfo.head.ref,
+          request_author: pullRequestInfo.user.login
+        })
+      }
     }
+
+    core.setOutput('LabeledPullRequests', JSON.stringify(outputArray))
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
+
+run()
